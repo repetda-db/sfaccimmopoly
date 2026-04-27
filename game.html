@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sfaccimmopoly — Partita</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       TOP BAR
+  ══════════════════════════════════════ -->
+  <header id="top-bar">
+    <span id="room-name-display">Stanza...</span>
+
+    <div id="top-bar-actions">
+      <button id="btn-rules"   class="btn-icon" title="Regole">📖</button>
+      <button id="btn-leave"   class="btn-icon" title="Abbandona">🚪</button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════
+       MAIN LAYOUT
+  ══════════════════════════════════════ -->
+  <main id="game-layout">
+
+    <!-- LEFT — Player list -->
+    <aside id="panel-players">
+      <h2 class="panel-title">Giocatori</h2>
+      <ul id="player-list"></ul>
+    </aside>
+
+    <!-- CENTER — Board -->
+    <section id="board-wrap">
+      <div id="board">
+        <!-- Squares injected by JS -->
+      </div>
+    </section>
+
+    <!-- RIGHT — Action panel -->
+    <aside id="panel-actions">
+
+      <!-- Waiting room (pre-game) -->
+      <div id="phase-waiting">
+        <p id="waiting-msg">In attesa di giocatori...</p>
+        <button id="btn-start-game" class="btn-primary hidden">
+          🎲 Inizia partita
+        </button>
+      </div>
+
+      <!-- In-game controls -->
+      <div id="phase-game" class="hidden">
+
+        <div id="current-turn-banner">
+          Turno di <strong id="turn-player-name">—</strong>
+        </div>
+
+        <div id="dice-area">
+          <div id="dice-display">
+            <span id="die-1">⚀</span>
+            <span id="die-2">⚀</span>
+          </div>
+          <button id="btn-roll" class="btn-primary">🎲 Lancia</button>
+        </div>
+
+        <div id="action-log">
+          <p class="log-title">Registro azioni</p>
+          <ul id="log-list"></ul>
+        </div>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ══════════════════════════════════════
+       MODALS
+  ══════════════════════════════════════ -->
+
+  <!-- Property card modal -->
+  <div id="modal-property" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h2 id="prop-name">Proprietà</h2>
+      <p  id="prop-desc"></p>
+      <div id="prop-details"></div>
+      <div class="modal-footer">
+        <button id="btn-prop-buy"   class="btn-primary">💰 Acquista</button>
+        <button id="btn-prop-close" class="btn-secondary">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chance / Community chest modal -->
+  <div id="modal-card" class="modal-overlay hidden">
+    <div class="modal-box modal-card-box">
+      <p id="card-type-label">Probabilità</p>
+      <p id="card-text"></p>
+      <div class="modal-footer">
+        <button id="btn-card-close" class="btn-primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bankruptcy modal -->
+  <div id="modal-bankrupt" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h2>💸 Bancarotta!</h2>
+      <p id="bankrupt-msg"></p>
+      <div class="modal-footer">
+        <button id="btn-bankrupt-ok" class="btn-secondary">Esci</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trade modal (placeholder) -->
+  <div id="modal-trade" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h2>🤝 Scambio</h2>
+      <p>Funzione in arrivo...</p>
+      <div class="modal-footer">
+        <button id="btn-trade-close" class="btn-secondary">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       SCRIPTS
+  ══════════════════════════════════════ -->
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- App scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/board-data.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+</html>
