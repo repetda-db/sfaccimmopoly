@@ -74,7 +74,7 @@ const GAME_CONFIG = {
   syncInterval: 1000,
 
   // Session storage key (so you don't re-enter password each refresh)
-  sessionKey: 'sfaccimmopoly_authenticated',
+  sessionKey: 'sfaccimmopoly_auth',
 
   // Local storage key for player profile
   playerKey: 'sfaccimmopoly_player'
