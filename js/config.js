@@ -27,3 +27,5 @@ const GAME_CONFIG = {
 window.firebaseConfig = firebaseConfig;
 window.PASSWORD_HASH  = PASSWORD_HASH;
 window.GAME_CONFIG    = GAME_CONFIG;
+firebase.initializeApp(firebaseConfig);
+window.db = firebase.database();
