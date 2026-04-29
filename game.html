@@ -128,20 +128,41 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       SCRIPTS
+   <!-- ══════════════════════════════════════
+      SCRIPTS
   ══════════════════════════════════════ -->
 
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
-  <!-- App scripts -->
+  <!-- 1. Config & inizializzazione Firebase -->
   <script src="js/config.js"></script>
-  <script src="js/auth.js"></script>
+  <script src="js/firebase.js"></script>
+
+  <!-- 2. i18n / traduzioni -->
+  <script src="js/translations.js"></script>
+  <script src="js/i18n.js"></script>
+
+  <!-- 3. Dati statici -->
   <script src="js/board-data.js"></script>
+  <script src="js/cards-data.js"></script>
+  <script src="js/images.js"></script>
+
+  <!-- 4. Auth & sync -->
+  <script src="js/auth.js"></script>
   <script src="js/sync.js"></script>
+
+  <!-- 5. UI -->
   <script src="js/ui.js"></script>
+
+  <!-- 6. Logica di gioco -->
+  <script src="js/game-core.js"></script>
+  <script src="js/game-actions.js"></script>
+  <script src="js/quick-mode.js"></script>
+  <script src="js/betting-mode.js"></script>
+
+  <!-- 7. Entry point (SEMPRE per ultimo) -->
   <script src="js/main.js"></script>
 
 </body>
