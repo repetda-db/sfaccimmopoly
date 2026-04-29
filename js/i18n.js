@@ -1,27 +1,22 @@
-/* i18n.js — SOSTITUISCI INTERAMENTE con questo */
 'use strict';
 
-/**
- * Thin wrapper around Translations.
- * Reads/writes language from localStorage.
- * Applies data-i18n attributes to the DOM.
- */
-const i18n = {
+/* ============================================
+   SFACCIMMOPOLY — i18n bridge
+   Wraps Translations.js for DOM binding
+   ============================================ */
+
+const I18n = {
 
   get lang() {
     return Translations.getLanguage();
   },
 
-  /**
-   * Translate a key with optional vars.
-   * Delegates to Translations.t()
-   * Keys use snake_case: 'btn_roll_dice', 'msg_rolled', etc.
-   */
-  t(key, vars) {
+  /** Translate a key (with optional vars) */
+  translate(key, vars) {
     return Translations.t(key, vars);
   },
 
-  /** Change language, persist to localStorage, update DOM */
+  /** Change language and refresh DOM */
   setLang(lang) {
     Translations.setLanguage(lang);
     localStorage.setItem('sfaccimmopoly_lang', lang);
@@ -29,7 +24,7 @@ const i18n = {
     this._updateLangButtons(lang);
   },
 
-  /** Apply data-i18n attributes to all elements in the DOM */
+  /** Apply translations to all [data-i18n] elements */
   applyDOM() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
@@ -38,9 +33,17 @@ const i18n = {
         el.textContent = translated;
       }
     });
+
+    // Placeholders: <input data-i18n-placeholder="...">
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      const translated = Translations.t(key);
+      if (translated && translated !== key) {
+        el.placeholder = translated;
+      }
+    });
   },
 
-  /** Highlight active lang button */
   _updateLangButtons(lang) {
     document.querySelectorAll('[data-lang]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -48,28 +51,23 @@ const i18n = {
     document.documentElement.lang = lang;
   },
 
-  /** Init: restore saved language + apply DOM */
+  /** Initialize: load saved lang, bind buttons, apply DOM */
   init() {
     const saved = localStorage.getItem('sfaccimmopoly_lang')
-                  || GAME_CONFIG.defaultLanguage
-                  || 'it';
-    Translations.setLanguage(saved);
-    this._updateLangButtons(saved);
+               || GAME_CONFIG.defaultLanguage
+               || 'it';
 
-    // Wire lang buttons automatically
+    Translations.setLanguage(saved);
+
     document.querySelectorAll('[data-lang]').forEach(btn => {
       btn.addEventListener('click', () => this.setLang(btn.dataset.lang));
     });
 
-    // Apply translations on languageChanged event
-    document.addEventListener('languageChanged', () => this.applyDOM());
-
     this.applyDOM();
+    this._updateLangButtons(saved);
   }
 };
 
-/* Single global shorthand — ONE definition only */
-const t = (key, vars) => Translations.t(key, vars);
-
-window.i18n = i18n;
-window.t    = t;
+// Expose globally — both names for compatibility
+window.I18n = I18n;
+window.i18n = I18n;
