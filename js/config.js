@@ -1,6 +1,6 @@
-/* SFACCIMMOPOLY — CONFIGURATION */
+/* config.js — SOLO costanti, niente Firebase */
+'use strict';
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyAdI9kmt8AxAyVaVnK2ZxEarDeYyHCbOiM",
   authDomain: "sfaccimmopoly.firebaseapp.com",
@@ -27,5 +27,3 @@ const GAME_CONFIG = {
 window.firebaseConfig = firebaseConfig;
 window.PASSWORD_HASH  = PASSWORD_HASH;
 window.GAME_CONFIG    = GAME_CONFIG;
-firebase.initializeApp(firebaseConfig);
-window.db = firebase.database();

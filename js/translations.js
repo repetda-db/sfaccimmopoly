@@ -115,6 +115,28 @@ const Translations = (() => {
     err_invalid_code:     { it: 'Codice partita non valido.',       en: 'Invalid game code.',              es: 'Código de partida inválido.',       fr: 'Code de partie invalide.'          },
     err_game_full:        { it: 'Partita piena (max 6 giocatori).', en: 'Game full (max 6 players).',      es: 'Partida llena (máx. 6).',           fr: 'Partie complète (max 6 joueurs).'  },
     err_game_started:     { it: 'La partita è già iniziata.',       en: 'Game already started.',           es: 'La partida ya empezó.',             fr: 'La partie a déjà commencé.'        },
+
+    /* ── NAV / LAYOUT ───────────────────────── */
+    nav_logout:           { it: 'Esci',               en: 'Logout',            es: 'Salir',             fr: 'Quitter'           },
+
+    /* ── LOBBY ──────────────────────────────── */
+    lobby_your_profile:   { it: 'Il tuo profilo',     en: 'Your profile',      es: 'Tu perfil',         fr: 'Ton profil'        },
+    lobby_your_name:      { it: 'Nome',               en: 'Name',              es: 'Nombre',            fr: 'Nom'               },
+    lobby_your_token:     { it: 'Pedina',             en: 'Token',             es: 'Ficha',             fr: 'Pion'              },
+    lobby_selected:       { it: 'Selezionata:',       en: 'Selected:',         es: 'Seleccionada:',     fr: 'Sélectionnée:'     },
+    lobby_rooms:          { it: 'Stanze',             en: 'Rooms',             es: 'Salas',             fr: 'Salles'            },
+    lobby_create_room:    { it: '+ Crea stanza',      en: '+ Create room',     es: '+ Crear sala',      fr: '+ Créer salle'     },
+    lobby_no_rooms:       { it: 'Nessuna stanza aperta. Creane una!', en: 'No open rooms. Create one!', es: 'Sin salas. ¡Crea una!', fr: 'Aucune salle. Créez-en une!' },
+    lobby_modal_title:    { it: 'Nuova stanza',       en: 'New room',          es: 'Nueva sala',        fr: 'Nouvelle salle'    },
+    lobby_modal_name:     { it: 'Nome stanza',        en: 'Room name',         es: 'Nombre sala',       fr: 'Nom salle'         },
+    lobby_modal_max:      { it: 'Giocatori massimi',  en: 'Max players',       es: 'Jugadores máx.',    fr: 'Joueurs max.'      },
+    lobby_modal_cancel:   { it: 'Annulla',            en: 'Cancel',            es: 'Cancelar',          fr: 'Annuler'           },
+    lobby_modal_confirm:  { it: 'Crea',               en: 'Create',            es: 'Crear',             fr: 'Créer'             },
+
+    /* ── LOGIN ──────────────────────────────── */
+    login_subtitle:       { it: 'Inserisci la password per entrare', en: 'Enter password to access', es: 'Ingresa la contraseña', fr: 'Entrez le mot de passe' },
+    login_enter:          { it: 'Entra',              en: 'Enter',             es: 'Entrar',            fr: 'Entrer'            },
+    login_error:          { it: 'Password errata. Riprova.', en: 'Wrong password. Try again.', es: 'Contraseña incorrecta.', fr: 'Mot de passe incorrect.' },
   };
 
   /* ══════════════════════════════════════════
