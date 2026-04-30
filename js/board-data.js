@@ -383,3 +383,7 @@ function getStations() {
 function getUtilities() {
   return BOARD_DATA.filter(s => s.type === 'utility');
 }
+
+window.BoardData = BOARD_DATA;
+
+
