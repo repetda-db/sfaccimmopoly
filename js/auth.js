@@ -10,7 +10,7 @@ const Auth = {
      (called on every page load)
   ---------------------------------------- */
   isAuthenticated() {
-    return sessionStorage.getItem(GAME_CONFIG.sessionKey) === 'true';
+    return sessionStorage.getItem(GameConfig.sessionKey) === 'true';
   },
 
   /* ----------------------------------------
@@ -30,14 +30,14 @@ const Auth = {
      Returns Promise<true> or throws Error
   ---------------------------------------- */
   async login(plainPassword) {
-    const hash = await this.hashPassword(plainPassword);
+    const hash = await this.hashPassword(plainPassword);  
 
     if (hash !== PASSWORD_HASH) {
       throw new Error('wrong_password');
     }
 
     // Persist auth for this browser session
-    sessionStorage.setItem(GAME_CONFIG.sessionKey, 'true');
+    sessionStorage.setItem(GameConfig.sessionKey, 'true');
     return true;
   },
 
@@ -45,7 +45,7 @@ const Auth = {
      Logout — clear session and redirect
   ---------------------------------------- */
   logout() {
-    sessionStorage.removeItem(GAME_CONFIG.sessionKey);
+    sessionStorage.removeItem(GameConfig.sessionKey);
     window.location.href = 'index.html';
   },
 
@@ -64,7 +64,7 @@ const Auth = {
   ---------------------------------------- */
   savePlayer(name, token) {
     const player = { name: name.trim(), token };
-    localStorage.setItem(GAME_CONFIG.playerKey, JSON.stringify(player));
+    localStorage.setItem(GameConfig.playerKey, JSON.stringify(player));
     return player;
   },
 
@@ -73,7 +73,7 @@ const Auth = {
   ---------------------------------------- */
   loadPlayer() {
     try {
-      const raw = localStorage.getItem(GAME_CONFIG.playerKey);
+      const raw = localStorage.getItem(GameConfig.playerKey);
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
@@ -84,7 +84,7 @@ const Auth = {
      Clear saved player profile
   ---------------------------------------- */
   clearPlayer() {
-    localStorage.removeItem(GAME_CONFIG.playerKey);
+    localStorage.removeItem(GameConfig.playerKey);
   }
 };
 
