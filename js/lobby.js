@@ -217,7 +217,7 @@ async function createRoom() {
     }
 
     // Go to game room
-    window.location.href = `game.html?room=${newRoomRef.key}`;
+    window.location.href = `./game.html?room=${newRoomRef.key}`;
 
   } catch (err) {
     console.error('Create room error:', err);
@@ -246,7 +246,7 @@ async function joinRoom(roomId) {
     });
 
     saveProfile();
-    window.location.href = `game.html?room=${roomId}`;
+    window.location.href = `./game.html?room=${roomId}`;
 
   } catch (err) {
     console.error('Join room error:', err);
