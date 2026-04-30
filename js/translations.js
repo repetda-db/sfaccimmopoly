@@ -6,7 +6,7 @@ const Translations = (() => {
 
   const LANGUAGES = { it: 'Italiano', en: 'English', es: 'Español', fr: 'Français' };
 
-  /* ══════════════════════════════════════════
+  /* ═════════════════════════════════════════
      DICTIONARY
   ══════════════════════════════════════════ */
   const DICT = {
@@ -153,6 +153,11 @@ const Translations = (() => {
      PUBLIC — t()
   ══════════════════════════════════════════ */
   function t(key, vars) {
+    if (typeof key !== 'string') {
+      console.error('[i18n] Chiamata t() con chiave non-stringa:', key);
+      console.trace(); // mostra da dove viene la chiamata
+      return '';
+    }
     const entry = DICT[key];
     if (!entry) {
       console.warn(`[i18n] Missing key: "${key}"`);
