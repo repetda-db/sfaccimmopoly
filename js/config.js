@@ -13,7 +13,7 @@ const firebaseConfig = {
 
 const PASSWORD_HASH = "52685880d2dbb4c341c930300fe500b5e279e3dfbab60a9b5dd9310d00d40f34";
 
-const GAME_CONFIG = {
+const GameConfig = {
   defaultLanguage: 'it',
   startingMoney: 1500,
   goSalary: 200,
@@ -26,4 +26,4 @@ const GAME_CONFIG = {
 
 window.firebaseConfig = firebaseConfig;
 window.PASSWORD_HASH  = PASSWORD_HASH;
-window.GAME_CONFIG    = GAME_CONFIG;
+window.GameConfig    = GameConfig;
