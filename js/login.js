@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // Apply translations
-  i18n.applyToDOM();
+  i18n.applyDOM();
 
   // Elements
   const form     = document.getElementById('login-form');
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // If already authenticated, skip login
   if (Auth.isAuthenticated()) {
-    window.location.href = 'game.html';
+    window.location.href = './game.html';
     return;
   }
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       await Auth.login(input.value);
-      window.location.href = 'game.html';
+      window.location.href = './game.html';
     } catch {
       errorMsg.classList.remove('hidden');
       input.value = '';
