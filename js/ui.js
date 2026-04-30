@@ -99,8 +99,8 @@ const UI = (() => {
     const board = EL.board;
     if (!board) return;
     board.innerHTML = '';
-
-    boardData.forEach((cell, i) => {
+    const cells = boardData || BoardData;
+    cells.forEach((cell, i) => {
       const { row, col } = cellGridPos(i);
 
       const div = document.createElement('div');
