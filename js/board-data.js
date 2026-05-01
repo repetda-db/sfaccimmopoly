@@ -4,7 +4,8 @@
    Positions 0-39, clockwise from GO (bottom-right)
    ============================================ */
 
-const BOARD_DATA = [
+const BoardData = {
+  cells: [
 
   // ── Bottom row (right → left) : indices 0-10 ──
   {
@@ -360,30 +361,36 @@ const BOARD_DATA = [
     mortgage: 200,
   },
 
-];
+  ], // ← chiusura dell'array cells
 
-/* ── Helper lookups ─────────────────────────── */
+  /* ── Helper lookups ───────────────────────── */
+  getSquare(index) {
+    return this.cells[index] ?? null;
+  },
 
-/** Get square by index */
-function getSquare(index) {
-  return BOARD_DATA[index] ?? null;
-}
+  /** Alias usato da main.js */
+  getProperty(index) {
+    return this.cells[index] ?? null;
+  },
 
-/** Get all properties of a color group */
-function getColorGroup(color) {
-  return BOARD_DATA.filter(s => s.color === color);
-}
+  /** Usato da main.js quando legge input radio mortgage */
+  getPropertyById(id) {
+    const idx = parseInt(id, 10);
+    return this.cells[idx] ?? null;
+  },
 
-/** Get all stations */
-function getStations() {
-  return BOARD_DATA.filter(s => s.type === 'station');
-}
+  getColorGroup(color) {
+    return this.cells.filter(s => s.color === color);
+  },
 
-/** Get all utilities */
-function getUtilities() {
-  return BOARD_DATA.filter(s => s.type === 'utility');
-}
+  getStations() {
+    return this.cells.filter(s => s.type === 'station');
+  },
 
-window.BoardData = BOARD_DATA;
+  getUtilities() {
+    return this.cells.filter(s => s.type === 'utility');
+  }
+};
 
-
+/* Espone globalmente */
+window.BoardData = BoardData;
