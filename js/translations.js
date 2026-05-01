@@ -20,6 +20,7 @@ const Translations = (() => {
     btn_cancel:           { it: 'Annulla',            en: 'Cancel',          es: 'Cancelar',         fr: 'Annuler'           },
     btn_close:            { it: 'Chiudi',             en: 'Close',           es: 'Cerrar',           fr: 'Fermer'            },
     btn_start_game:       { it: 'Inizia Partita',     en: 'Start Game',      es: 'Iniciar Partida',  fr: 'Démarrer Partie'   },
+    btn_start:            { it: 'Inizia Partita',     en: 'Start Game',      es: 'Iniciar Partida',  fr: 'Démarrer Partie'   },
     btn_join_game:        { it: 'Unisciti',           en: 'Join Game',       es: 'Unirse',           fr: 'Rejoindre'         },
     btn_mortgage:         { it: 'Ipoteca',            en: 'Mortgage',        es: 'Hipotecar',        fr: 'Hypothéquer'       },
     btn_unmortgage:       { it: 'Riscatta',           en: 'Unmortgage',      es: 'Rescatar',         fr: 'Racheter'          },
