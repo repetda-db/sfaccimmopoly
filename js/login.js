@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // If already authenticated, skip login
   if (Auth.isAuthenticated()) {
-    window.location.href = './game.html';
+    window.location.href = './lobby.html';
     return;
   }
 
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       await Auth.login(input.value);
-      window.location.href = './game.html';
+      window.location.href = './lobby.html';
     } catch {
       errorMsg.classList.remove('hidden');
       input.value = '';
