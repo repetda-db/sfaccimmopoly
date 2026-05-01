@@ -8,6 +8,7 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/game.css" />
+  <link rel="stylesheet" href="css/cards.css" />
 </head>
 <body>
 
@@ -48,39 +49,79 @@
       <div id="phase-waiting">
         <p id="waiting-msg">In attesa di giocatori...</p>
         <button id="btn-start-game" class="btn-primary hidden">
-          🎲 Inizia partita
+          🎲 <span data-i18n="btn_start">Inizia partita</span>
         </button>
       </div>
 
       <!-- In-game controls -->
       <div id="phase-game" class="hidden">
-
         <div id="current-turn-banner">
           Turno di <strong id="turn-player-name">—</strong>
         </div>
 
         <div id="dice-area">
-          <div id="dice-display">
-            <span id="die-1">⚀</span>
-            <span id="die-2">⚀</span>
-          </div>
-          <button id="btn-roll" class="btn-primary">🎲 Lancia</button>
+          <div id="die-1">⚀</div>
+          <div id="die-2">⚁</div>
+          <div id="dice-result">—</div>
         </div>
 
-        <div id="action-log">
-          <p class="log-title">Registro azioni</p>
-          <ul id="log-list"></ul>
+        <div class="action-buttons">
+          <button id="btn-roll" class="btn-primary" data-i18n="btn_roll">🎲 Lancia</button>
+          <button id="btn-end-turn" class="btn-secondary" disabled data-i18n="btn_end">Passa turno</button>
+          <button id="btn-buy" class="btn-primary hidden" data-i18n="btn_buy">Compra</button>
+          <button id="btn-pass" class="btn-secondary hidden" data-i18n="btn_pass">Passa</button>
+          <button id="btn-mortgage" class="btn-secondary" data-i18n="btn_mortgage">Ipoteca</button>
+          <button id="btn-build" class="btn-secondary" data-i18n="btn_build">Costruisci</button>
+          <button id="btn-trade" class="btn-secondary" data-i18n="btn_trade">Scambia</button>
+          <button id="btn-bankrupt" class="btn-danger hidden" data-i18n="btn_bankrupt">Bancarotta</button>
         </div>
-
       </div>
-
     </aside>
-
   </main>
+
+  <!-- Log panel -->
+  <section id="log-panel">
+    <ul id="log-list"></ul>
+  </section>
+
+  <!-- Info property tooltip/panel -->
+  <div id="info-panel" class="hidden"></div>
 
   <!-- ══════════════════════════════════════
        MODALS
   ══════════════════════════════════════ -->
+  <!-- Generic modal (usato da UI.showModal) -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal-box" id="modal-box">
+      <h3 id="modal-title"></h3>
+      <div id="modal-body"></div>
+      <div id="modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- Card draw overlay -->
+  <div id="card-overlay" class="modal-overlay hidden">
+    <div id="card-face">
+      <div class="card-deck-label"></div>
+      <div class="card-icon"></div>
+      <div id="card-text"></div>
+      <button id="card-btn" class="btn-primary">OK</button>
+    </div>
+  </div>
+
+  <!-- Trade panel -->
+  <div id="trade-panel" class="hidden">
+    <p>Scambio non ancora attivo</p>
+  </div>
+
+  <!-- Auction panel -->
+  <div id="auction-panel" class="hidden">
+    <div id="auction-prop"></div>
+    <div id="auction-bid"></div>
+    <div id="auction-timer"></div>
+    <input type="number" id="auction-bid-input" placeholder="Offerta" />
+    <button id="auction-bid-btn" class="btn-primary">Offri</button>
+  </div>
 
   <!-- Property card modal -->
   <div id="modal-property" class="modal-overlay hidden">
