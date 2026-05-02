@@ -22,13 +22,13 @@
 
   /* Property group colors (Italian Monopoly board) */
   --prop-brown:    #8b4513;
-  --prop-lightblue:#87ceeb;
+  --prop-lblue:    #87ceeb;
   --prop-pink:     #ff69b4;
   --prop-orange:   #ffa500;
   --prop-red:      #dc143c;
   --prop-yellow:   #ffd700;
   --prop-green:    #228b22;
-  --prop-darkblue: #00008b;
+  --prop-dblue:    #00008b;
 
   /* Typography */
   --font-main:    'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
