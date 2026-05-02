@@ -116,7 +116,7 @@ const UI = (() => {
       /* color strip for properties */
       if (cell.color) {
         const strip = document.createElement('div');
-        strip.className = 'cell-color-strip';
+        strip.className = `cell-color-strip color-${cell.color}`;
         strip.style.background = cell.color;
         div.appendChild(strip);
       }
