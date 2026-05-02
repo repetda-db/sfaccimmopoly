@@ -249,7 +249,7 @@ body {
 
 #current-turn-banner {
   background: var(--accent);
-  color: #fff;
+  color: #ff0000;
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
   font-size: 0.9rem;
