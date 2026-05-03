@@ -12,14 +12,13 @@ const Translations = (() => {
   const DICT = {
 
     /* ── UI BUTTONS ─────────────────────────── */
-    btn_roll_dice:        { it: 'Lancia i Dadi',     en: 'Roll Dice',       es: 'Lanzar Dados',     fr: 'Lancer les Dés'    },
-    btn_end_turn:         { it: 'Fine Turno',         en: 'End Turn',        es: 'Fin del Turno',    fr: 'Fin du Tour'       },
+    btn_roll:             { it: 'Lancia i Dadi',      en: 'Roll Dice',       es: 'Lanzar Dados',     fr: 'Lancer les Dés'    },
+    btn_end:              { it: 'Fine Turno',         en: 'End Turn',        es: 'Fin del Turno',    fr: 'Fin du Tour'       },
     btn_buy:              { it: 'Compra',             en: 'Buy',             es: 'Comprar',          fr: 'Acheter'           },
     btn_pass:             { it: 'Passa',              en: 'Pass',            es: 'Pasar',            fr: 'Passer'            },
     btn_ok:               { it: 'OK',                 en: 'OK',              es: 'OK',               fr: 'OK'                },
     btn_cancel:           { it: 'Annulla',            en: 'Cancel',          es: 'Cancelar',         fr: 'Annuler'           },
     btn_close:            { it: 'Chiudi',             en: 'Close',           es: 'Cerrar',           fr: 'Fermer'            },
-    btn_start_game:       { it: 'Inizia Partita',     en: 'Start Game',      es: 'Iniciar Partida',  fr: 'Démarrer Partie'   },
     btn_start:            { it: 'Inizia Partita',     en: 'Start Game',      es: 'Iniciar Partida',  fr: 'Démarrer Partie'   },
     btn_join_game:        { it: 'Unisciti',           en: 'Join Game',       es: 'Unirse',           fr: 'Rejoindre'         },
     btn_mortgage:         { it: 'Ipoteca',            en: 'Mortgage',        es: 'Hipotecar',        fr: 'Hypothéquer'       },
@@ -31,6 +30,7 @@ const Translations = (() => {
     btn_use_card:         { it: 'Usa Carta',          en: 'Use Card',        es: 'Usar Carta',       fr: 'Utiliser Carte'    },
     btn_settings:         { it: 'Impostazioni',       en: 'Settings',        es: 'Configuración',    fr: 'Paramètres'        },
     btn_place_bet:        { it: 'Scommetti',          en: 'Place Bet',       es: 'Apostar',          fr: 'Parier'            },
+    btn_bankrupt:         { it: 'Bancarotta',         en: 'Bankrupt',        es: 'Quiebra',          fr: 'Faillite'          },
 
     /* ── GAME MODES ─────────────────────────── */
     mode_classic:         { it: 'Classico',           en: 'Classic',         es: 'Clásico',          fr: 'Classique'         },
