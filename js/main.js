@@ -1,5 +1,60 @@
 'use strict';
 
+/* ══════════════════════════════════════════
+   SAFETY POLYFILLS  (aggiungi subito dopo 'use strict';)
+  ══════════════════════════════════════════ */
+
+/* 1. GameConfig fallback */
+const GameConfig = window.GameConfig || {
+  GO_SALARY: 200,
+  JAIL_FINE: 50,
+  MAX_DOUBLES: 3,
+};
+
+/* 2. GameLogic metodi che main.js si aspetta ma game-core.js potrebbe non esporre */
+if (!window.GameLogic) window.GameLogic = {};
+const GL = window.GameLogic;
+
+GL.calcMove = GL.calcMove || function(pos, steps) {
+  const newPos = (pos + steps) % 40;
+  return { newPos, passedGo: newPos < pos && steps > 0 };
+};
+
+GL.calcRent = GL.calcRent || function(prop, ps) {
+  const houses = ps.houses || 0;
+  if (houses > 0 && Array.isArray(prop.houseRent)) {
+    return prop.houseRent[Math.min(houses, prop.houseRent.length) - 1] || prop.baseRent;
+  }
+  if (prop.type === 'station') {
+    if (!ps.owner) return 0;
+    const count = Object.values((window.GameState?.properties) || {})
+      .filter(p => p.type === 'station' && p.owner === ps.owner).length;
+    return (prop.baseRent || 25) * count;
+  }
+  return prop.baseRent || 0;
+};
+
+GL.calcUtilityRent = GL.calcUtilityRent || function(prop, ps, roll) {
+  if (!ps.owner) return 0;
+  const utilCount = Object.values((window.GameState?.properties) || {})
+    .filter(p => p.type === 'utility' && p.owner === ps.owner).length;
+  return roll * (utilCount === 2 ? 10 : 4);
+};
+
+GL.shuffleTurnOrder = GL.shuffleTurnOrder || function(arr) {
+  const a = Array.from(arr);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
+/* 3. Alias toast */
+if (typeof UI !== 'undefined' && !UI.toast && UI.showToast) {
+  UI.toast = UI.showToast;
+}
+
 /* ============================================
    SFACCIMMOPOLY — MAIN
    Game orchestrator: ties together
@@ -116,9 +171,10 @@ const Main = (() => {
   /* ══════════════════════════════════════════
      STATE UPDATE (main driver)
   ══════════════════════════════════════════ */
-  function _onStateUpdate(snap) {
+    function _onStateUpdate(snap) {
     if (!snap.exists()) return;
     state = snap.val();
+    if (!state) { console.warn('Snapshot vuoto'); return; }
 
     /* mirror players on board */
     _syncTokens();
@@ -131,27 +187,23 @@ const Main = (() => {
 
     /* code display */
     const codeEl = document.getElementById('code-display');
-    if (codeEl) codeEl.textContent = state.code;
+    if (codeEl) codeEl.textContent = state.code || '';
 
     /* mode display */
     const modeEl = document.getElementById('mode-display');
-    if (modeEl) modeEl.textContent = t(`mode_${state.mode}`);
+    if (modeEl) modeEl.textContent = t(`mode_${state.mode || 'classic'}`);
 
-    /* determine if it's my turn */
+    /* ── LOCAL FLAGS (fondamentale!) ── */
     isMyTurn  = (state.currentPlayer === myId);
     hasRolled = !!(state.turnState?.rolled);
 
-    /* update button states */
-    _refreshButtons();
+    /* phase router */
+    const phase = state.status || state.phase || 'waiting';
+    if (phase === 'waiting')       _handleWaiting();
+    else if (phase === 'playing')  _handlePlaying();
+    else if (phase === 'ended')    _handleGameEnd();
 
-    /* status-based actions */
-    if (state.status === 'waiting') {
-      _handleWaiting();
-    } else if (state.status === 'playing') {
-      _handlePlaying();
-    } else if (state.status === 'ended') {
-      _handleGameEnd();
-    }
+    _refreshButtons();
   }
 
   function _onPlayerChange() {
@@ -187,7 +239,7 @@ const Main = (() => {
     Object.entries(state.properties).forEach(([propId, ps]) => {
       const prop = BoardData.getPropertyById(propId);
       if (!prop) return;
-      const owner = ps.owner ? state.players[ps.owner] : null;
+      const owner = ps.owner ? state.players?.[ps.owner] : null;
       UI.markPropertyOwner(prop.cellIndex, owner?.color || null);
       UI.markHouses(prop.cellIndex, ps.houses || 0, ps.hotel || false);
       UI.markMortgage(prop.cellIndex, ps.mortgaged || false);
@@ -314,6 +366,7 @@ const Main = (() => {
   ══════════════════════════════════════════ */
   async function _onStartGame() {
     if (inAction) return; inAction = true;
+    if (!state || !state.players) { UI.toast('Stanza non pronta', 'error'); inAction = false; return; }
     try {
       const order = GameLogic.shuffleTurnOrder(Object.keys(state.players));
       await Sync.setTurnOrder(order);
@@ -332,8 +385,12 @@ const Main = (() => {
   /* ══════════════════════════════════════════
      ROLL DICE
   ══════════════════════════════════════════ */
-  async function _onRoll() {
+    async function _onRoll() {
     if (!isMyTurn || hasRolled || inAction) return;
+    if (!state || !state.players || !state.players[myId]) {
+      UI.toast('Dati giocatore non pronti', 'error');
+      return;
+    }
     inAction = true;
 
     try {
@@ -365,38 +422,41 @@ const Main = (() => {
 
       await Sync.updatePlayer(myId, { position: newPos });
 
-      /* update turn state */
+      /* aggiorna turnState locale in anticipo per il calcolo doppi */
+      const newDoubles = isDouble ? (state.turnState?.doubles || 0) + 1 : 0;
+
       await Sync.update({
-        [`turnState/rolled`]:   true,
-        [`turnState/doubles`]:  isDouble ? (state.turnState?.doubles || 0) + 1 : 0,
-        [`turnState/lastRoll`]: [d1, d2],
+        'turnState/rolled':   true,
+        'turnState/doubles':  newDoubles,
+        'turnState/lastRoll': [d1, d2],
       });
 
       /* land on cell */
       await _landOnCell(newPos, me);
 
       /* three doubles → jail */
-      const doubles = isDouble ? (state.turnState?.doubles || 0) + 1 : 0;
-      if (doubles >= 3) {
+      if (newDoubles >= 3) {
         await _sendToJail();
         return;
       }
 
-      /* if double, allow re-roll (clear rolled flag) */
+      /* double → re-roll */
       if (isDouble) {
         await Sync.update({ 'turnState/rolled': false });
         UI.toast(t('msg_double'), 'info');
       }
-
     } catch (e) {
       UI.toast(e.message, 'error');
-    } finally { inAction = false; }
+    } finally {
+      inAction = false;
+    }
   }
 
   /* ══════════════════════════════════════════
      LAND ON CELL
   ══════════════════════════════════════════ */
   async function _landOnCell(pos, player) {
+    if (!state || !state.players) return;
     const cell = BoardData.cells[pos];
     if (!cell) return;
 
@@ -458,6 +518,7 @@ const Main = (() => {
      RENT
   ══════════════════════════════════════════ */
   async function _payRent(cell, propState, payer) {
+    if (!state || !state.players) return;
     const prop  = BoardData.getPropertyById(cell.propertyId);
     const owner = state.players[propState.owner];
     if (!prop || !owner) return;
@@ -513,6 +574,7 @@ const Main = (() => {
      BUY PROPERTY
   ══════════════════════════════════════════ */
   async function _doBuy(prop) {
+    if (!state || !state.players || !state.players[myId]) return;
     if (inAction) return; inAction = true;
     try {
       const me = state.players[myId];
@@ -533,6 +595,7 @@ const Main = (() => {
 
   /* pass → go to auction (if enabled) or just pass */
   async function _doPass(prop) {
+    if (!state || !state.players || !state.players[myId]) return;
     if (inAction) return; inAction = true;
     try {
       await Sync.update({ 'turnState/pendingBuy': null });
@@ -549,6 +612,7 @@ const Main = (() => {
      CARDS
   ══════════════════════════════════════════ */
   async function _drawCard(deckType) {
+    if (!state || !state.players || !state.players[myId]) return;
     const decks    = state.decks || {};
     const result   = Cards.drawCard(deckType, decks);
     await Sync.updateDeck(deckType, result.newDeck);
@@ -604,6 +668,7 @@ const Main = (() => {
   }
 
   async function _jailRoll() {
+    if (!state || !state.players || !state.players[myId]) return;
     const { d1, d2 } = GameLogic.rollDice();
     await UI.animateDice(d1, d2);
     const me = state.players[myId];
@@ -629,6 +694,7 @@ const Main = (() => {
   }
 
   async function _jailPay() {
+    if (!state || !state.players || !state.players[myId]) return;
     const me = state.players[myId];
     await Sync.updatePlayer(myId, { money: me.money - GameConfig.JAIL_FINE, inJail: false, jailTurns: 0 });
     await Sync.update({ 'turnState/rolled': false });
@@ -637,6 +703,7 @@ const Main = (() => {
   }
 
   async function _jailUseCard() {
+    if (!state || !state.players || !state.players[myId]) return;
     const me = state.players[myId];
     await Sync.updatePlayer(myId, { getOutCards: me.getOutCards - 1, inJail: false, jailTurns: 0 });
     await Sync.update({ 'turnState/rolled': false });
@@ -648,6 +715,7 @@ const Main = (() => {
      MORTGAGE
   ══════════════════════════════════════════ */
   async function _onMortgage() {
+    if (!state || !state.players || !state.players[myId]) { UI.toast('Non sei in partita', 'error'); return; }
     const me = state.players[myId];
     const myProps = (me.properties || []).map(pid => {
       const prop = BoardData.getPropertyById(pid);
@@ -708,6 +776,7 @@ const Main = (() => {
      BUILD HOUSES / HOTEL
   ══════════════════════════════════════════ */
   async function _onBuild() {
+    if (!state || !state.players || !state.players[myId]) { UI.toast('Non sei in partita', 'error'); return; }
     const me = state.players[myId];
     const buildable = GameLogic.getBuildableProperties(me, state);
 
@@ -735,6 +804,7 @@ const Main = (() => {
   }
 
   async function _buildHouse(propId) {
+    if (!state || !state.players || !state.players[myId]) return;
     if (inAction) return; inAction = true;
     try {
       const me   = state.players[myId];
@@ -766,6 +836,7 @@ const Main = (() => {
      TRADE
   ══════════════════════════════════════════ */
   async function _onOpenTrade() {
+    if (!state || !state.players || !state.players[myId]) { UI.toast('Non sei in partita', 'error'); return; }
     const me      = state.players[myId];
     const others  = Object.values(state.players).filter(p => p.id !== myId && !p.isBankrupt);
     if (!others.length) { UI.toast(t('err_no_players_trade'), 'info'); return; }
@@ -786,6 +857,7 @@ const Main = (() => {
   }
 
   function _openTradeWithPlayer(partnerId) {
+    if (!state || !state.players) return;
     const me      = state.players[myId];
     const partner = state.players[partnerId];
     const myProps = (me.properties || []).map(pid => BoardData.getPropertyById(pid)).filter(Boolean);
@@ -806,6 +878,7 @@ const Main = (() => {
   }
 
   async function _handleIncomingTrade(trade) {
+    if (!state || !state.players) return;
     if (!trade || trade.status !== 'pending') return;
     if (trade.to !== myId) return;
 
@@ -910,6 +983,7 @@ const Main = (() => {
   }
 
   async function _declareBankruptcy(debtor, creditor) {
+    if (!state || !state.players) return;
     if (inAction) return; inAction = true;
     try {
       /* transfer assets to creditor or bank */
@@ -946,6 +1020,7 @@ const Main = (() => {
      CARD HELPERS
   ══════════════════════════════════════════ */
   async function _payEachPlayer(amount) {
+    if (!state || !state.players || !state.players[myId]) return;
     const me = state.players[myId];
     const others = Object.values(state.players).filter(p => !p.isBankrupt && p.id !== myId);
     const total  = amount * others.length;
@@ -960,6 +1035,7 @@ const Main = (() => {
   }
 
   async function _collectFromAll(amount) {
+    if (!state || !state.players || !state.players[myId]) return;
     const me     = state.players[myId];
     const others = Object.values(state.players).filter(p => !p.isBankrupt && p.id !== myId);
     let total = 0;
@@ -979,6 +1055,7 @@ const Main = (() => {
   ══════════════════════════════════════════ */
   async function _onEndTurn() {
     if (!isMyTurn || !hasRolled || inAction) return;
+    if (!state || !state.players) return;
     inAction = true;
     try {
       await Sync.nextTurn();
@@ -1001,3 +1078,4 @@ const Main = (() => {
 
 /* ── Auto-boot ────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => Main.boot());
+
