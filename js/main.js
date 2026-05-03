@@ -1,34 +1,33 @@
 'use strict';
 
-/* ══════════════════════════════════════════
-   SAFETY POLYFILLS  (aggiungi subito dopo 'use strict';)
-  ══════════════════════════════════════════ */
-
-/* 1. GameConfig fallback */
-const GameConfig = window.GameConfig || {
+/* SAFETY POLYFILLS - compatibile */
+var GameConfig = window.GameConfig || {
   GO_SALARY: 200,
   JAIL_FINE: 50,
-  MAX_DOUBLES: 3,
+  MAX_DOUBLES: 3
 };
 
-/* 2. GameLogic metodi che main.js si aspetta ma game-core.js potrebbe non esporre */
 if (!window.GameLogic) window.GameLogic = {};
-const GL = window.GameLogic;
+var GL = window.GameLogic;
 
 GL.calcMove = GL.calcMove || function(pos, steps) {
-  const newPos = (pos + steps) % 40;
-  return { newPos, passedGo: newPos < pos && steps > 0 };
+  var newPos = (pos + steps) % 40;
+  return { newPos: newPos, passedGo: newPos < pos && steps > 0 };
 };
 
 GL.calcRent = GL.calcRent || function(prop, ps) {
-  const houses = ps.houses || 0;
+  var houses = ps.houses || 0;
   if (houses > 0 && Array.isArray(prop.houseRent)) {
-    return prop.houseRent[Math.min(houses, prop.houseRent.length) - 1] || prop.baseRent;
+    var idx = Math.min(houses, prop.houseRent.length) - 1;
+    return prop.houseRent[idx] || prop.baseRent;
   }
   if (prop.type === 'station') {
     if (!ps.owner) return 0;
-    const count = Object.values((window.GameState?.properties) || {})
-      .filter(p => p.type === 'station' && p.owner === ps.owner).length;
+    var count = 0;
+    var props = (window.GameState && window.GameState.properties) ? window.GameState.properties : {};
+    for (var k in props) {
+      if (props[k].type === 'station' && props[k].owner === ps.owner) count++;
+    }
     return (prop.baseRent || 25) * count;
   }
   return prop.baseRent || 0;
@@ -36,21 +35,25 @@ GL.calcRent = GL.calcRent || function(prop, ps) {
 
 GL.calcUtilityRent = GL.calcUtilityRent || function(prop, ps, roll) {
   if (!ps.owner) return 0;
-  const utilCount = Object.values((window.GameState?.properties) || {})
-    .filter(p => p.type === 'utility' && p.owner === ps.owner).length;
+  var utilCount = 0;
+  var props = (window.GameState && window.GameState.properties) ? window.GameState.properties : {};
+  for (var k in props) {
+    if (props[k].type === 'utility' && props[k].owner === ps.owner) utilCount++;
+  }
   return roll * (utilCount === 2 ? 10 : 4);
 };
 
 GL.shuffleTurnOrder = GL.shuffleTurnOrder || function(arr) {
-  const a = Array.from(arr);
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+  var a = Array.from(arr);
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i];
+    a[i] = a[j];
+    a[j] = tmp;
   }
   return a;
 };
 
-/* 3. Alias toast */
 if (typeof UI !== 'undefined' && !UI.toast && UI.showToast) {
   UI.toast = UI.showToast;
 }
