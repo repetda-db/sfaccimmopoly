@@ -117,7 +117,6 @@ const UI = (() => {
       if (cell.color) {
         const strip = document.createElement('div');
         strip.className = `cell-color-strip color-${cell.color}`;
-        strip.style.background = cell.color;
         div.appendChild(strip);
       }
 
@@ -145,6 +144,8 @@ const UI = (() => {
 
       board.appendChild(div);
     });
+  }
+
 
     EL.cells = board.querySelectorAll('.cell');
 
