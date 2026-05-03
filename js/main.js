@@ -1,63 +1,63 @@
 'use strict';
 
-/* SAFETY POLYFILLS - compatibile */
-var GameConfig = window.GameConfig || {
-  GO_SALARY: 200,
-  JAIL_FINE: 50,
-  MAX_DOUBLES: 3
-};
+/* SAFETY POLYFILLS - nessuna rideclarazione globale */
+window.GameLogic = window.GameLogic || {};
 
-if (!window.GameLogic) window.GameLogic = {};
-var GL = window.GameLogic;
+if (!window.GameLogic.calcMove) {
+  window.GameLogic.calcMove = function(pos, steps) {
+    var newPos = (pos + steps) % 40;
+    return { newPos: newPos, passedGo: newPos < pos && steps > 0 };
+  };
+}
 
-GL.calcMove = GL.calcMove || function(pos, steps) {
-  var newPos = (pos + steps) % 40;
-  return { newPos: newPos, passedGo: newPos < pos && steps > 0 };
-};
+if (!window.GameLogic.calcRent) {
+  window.GameLogic.calcRent = function(prop, ps) {
+    var houses = ps.houses || 0;
+    if (houses > 0 && Array.isArray(prop.houseRent)) {
+      var idx = Math.min(houses, prop.houseRent.length) - 1;
+      return prop.houseRent[idx] || prop.baseRent;
+    }
+    if (prop.type === 'station') {
+      if (!ps.owner) return 0;
+      var count = 0;
+      var props = (window.GameState && window.GameState.properties) ? window.GameState.properties : {};
+      for (var k in props) {
+        if (props[k].type === 'station' && props[k].owner === ps.owner) count++;
+      }
+      return (prop.baseRent || 25) * count;
+    }
+    return prop.baseRent || 0;
+  };
+}
 
-GL.calcRent = GL.calcRent || function(prop, ps) {
-  var houses = ps.houses || 0;
-  if (houses > 0 && Array.isArray(prop.houseRent)) {
-    var idx = Math.min(houses, prop.houseRent.length) - 1;
-    return prop.houseRent[idx] || prop.baseRent;
-  }
-  if (prop.type === 'station') {
+if (!window.GameLogic.calcUtilityRent) {
+  window.GameLogic.calcUtilityRent = function(prop, ps, roll) {
     if (!ps.owner) return 0;
-    var count = 0;
+    var utilCount = 0;
     var props = (window.GameState && window.GameState.properties) ? window.GameState.properties : {};
     for (var k in props) {
-      if (props[k].type === 'station' && props[k].owner === ps.owner) count++;
+      if (props[k].type === 'utility' && props[k].owner === ps.owner) utilCount++;
     }
-    return (prop.baseRent || 25) * count;
-  }
-  return prop.baseRent || 0;
-};
+    return roll * (utilCount === 2 ? 10 : 4);
+  };
+}
 
-GL.calcUtilityRent = GL.calcUtilityRent || function(prop, ps, roll) {
-  if (!ps.owner) return 0;
-  var utilCount = 0;
-  var props = (window.GameState && window.GameState.properties) ? window.GameState.properties : {};
-  for (var k in props) {
-    if (props[k].type === 'utility' && props[k].owner === ps.owner) utilCount++;
-  }
-  return roll * (utilCount === 2 ? 10 : 4);
-};
-
-GL.shuffleTurnOrder = GL.shuffleTurnOrder || function(arr) {
-  var a = Array.from(arr);
-  for (var i = a.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = a[i];
-    a[i] = a[j];
-    a[j] = tmp;
-  }
-  return a;
-};
+if (!window.GameLogic.shuffleTurnOrder) {
+  window.GameLogic.shuffleTurnOrder = function(arr) {
+    var a = Array.from(arr);
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i];
+      a[i] = a[j];
+      a[j] = tmp;
+    }
+    return a;
+  };
+}
 
 if (typeof UI !== 'undefined' && !UI.toast && UI.showToast) {
   UI.toast = UI.showToast;
 }
-
 /* ============================================
    SFACCIMMOPOLY — MAIN
    Game orchestrator: ties together
