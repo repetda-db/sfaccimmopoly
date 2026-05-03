@@ -366,3 +366,54 @@ function initGame(roomData, localPlayerId) {
 
   addLog(t('log_game_start'));
 }
+
+/* ============================================
+   SFACCIMMOPOLY — GAME LOGIC FACADE
+   Esponde un oggetto/classe GameLogic per i
+   file che lo cercano (main.js, UI, ecc.)
+   ============================================ */
+
+class GameLogic {
+  constructor(roomData, localPlayerId) {
+    if (roomData) this.init(roomData, localPlayerId);
+  }
+
+  /* ── Stato di gioco (getter di comodo) ─────── */
+  get state()        { return GameState; }
+  get current()      { return currentPlayer(); }
+  get players()      { return GameState.players; }
+  get dice()         { return GameState.dice; }
+  get phase()        { return GameState.phase; }
+  get turnIndex()    { return GameState.currentTurn; }
+
+  /* ── Inizializzazione / flusso turno ───────── */
+  init(roomData, localId)      { return initGame(roomData, localId); }
+  startTurn()                  { return takeTurn(); }
+  end()                        { return endTurn(); }
+
+  /* ── Dadi & movimento ──────────────────────── */
+  roll()                       { return rollDice(); }
+  move(player, steps)          { return movePlayer(player, steps); }
+  teleport(player, pos, collect) { return teleportPlayer(player, pos, collect); }
+
+  /* ── Prigione ──────────────────────────────── */
+  jail(player)                 { return sendToJail(player); }
+  tryJail(player, roll)        { return tryLeaveJail(player, roll); }
+  payJail(player)              { return payJailFine(player); }
+  useJailCard(player)          { return useJailCard(player); }
+
+  /* ── Atterraggi & meta-gioco ───────────────── */
+  land(player, squareIdx)      { return handleLanding(player, squareIdx); }
+  eliminate(player)            { return eliminatePlayer(player); }
+  checkWin()                   { return checkWinCondition(); }
+
+  /* ── Utilità ───────────────────────────────── */
+  playerById(id)               { return getPlayerById(id); }
+  isLocal()                    { return isLocalTurn(); }
+  log(text)                    { return addLog(text); }
+}
+
+/* Esponi nel scope globale per script non-modulari */
+if (typeof window !== 'undefined') {
+  window.GameLogic = GameLogic;
+}
