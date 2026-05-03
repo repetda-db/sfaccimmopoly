@@ -144,9 +144,8 @@ const UI = (() => {
 
       board.appendChild(div);
     });
-  }
 
-
+    /* cache all rendered cells */
     EL.cells = board.querySelectorAll('.cell');
 
     /* center logo */
@@ -360,10 +359,11 @@ const UI = (() => {
     EL.modalBody.innerHTML     = body;
     EL.modalFooter.innerHTML   = '';
 
-    buttons.forEach(({ label, cls, cb }) => {
+    buttons.forEach(({ label, cls, cb, disabled }) => {
       const btn = document.createElement('button');
       btn.className   = `btn ${cls || ''}`;
       btn.textContent = label;
+      if (disabled) btn.disabled = true;
       btn.onclick     = () => { if (cb) cb(); hideModal(); };
       EL.modalFooter.appendChild(btn);
     });
@@ -447,7 +447,7 @@ const UI = (() => {
         </div>`,
       buttons: [
         { label: t('btn_buy'),  cls: 'btn-primary',   cb: onBuy,  disabled: !canAfford },
-        { label: t('btn_pass'), cls: 'btn-secondary',  cb: onPass },
+        { label: t('btn_pass'), cls: 'btn-secondary', cb: onPass },
       ],
     });
   }
@@ -465,7 +465,7 @@ const UI = (() => {
     const bidInput = document.getElementById('auction-bid-input');
     const bidBtn   = document.getElementById('auction-bid-btn');
 
-    if (bidBtn) {
+    if (bidBtn && bidInput) {
       bidBtn.onclick = () => {
         const amount = parseInt(bidInput.value, 10);
         if (isNaN(amount) || amount <= (auction.highBid || 0)) {
@@ -497,10 +497,15 @@ const UI = (() => {
     if (!panel) return;
     panel.classList.remove('hidden');
 
+    /* use theirName if the UI provides a label element */
+    const theirNameEl = document.getElementById('trade-their-name');
+    if (theirNameEl) theirNameEl.textContent = theirName;
+
     const myList    = document.getElementById('trade-my-props');
     const theirList = document.getElementById('trade-their-props');
 
     const renderProps = (props, container) => {
+      if (!container) return;
       container.innerHTML = '';
       props.forEach(p => {
         const li = document.createElement('label');
@@ -510,15 +515,15 @@ const UI = (() => {
       });
     };
 
-    if (myList)    renderProps(myProps, myList);
-    if (theirList) renderProps(theirProps, theirList);
+    renderProps(myProps, myList);
+    renderProps(theirProps, theirList);
 
     const proposeBtn = document.getElementById('trade-propose-btn');
-    if (proposeBtn) {
+    if (proposeBtn && myList && theirList) {
       proposeBtn.onclick = () => {
         const mySelected    = [...myList.querySelectorAll('input:checked')].map(i => i.value);
         const theirSelected = [...theirList.querySelectorAll('input:checked')].map(i => i.value);
-        const myMoney    = parseInt(document.getElementById('trade-my-money').value   || 0, 10);
+        const myMoney    = parseInt(document.getElementById('trade-my-money').value    || 0, 10);
         const theirMoney = parseInt(document.getElementById('trade-their-money').value || 0, 10);
         onPropose({ myProps: mySelected, theirProps: theirSelected, myMoney, theirMoney });
       };
