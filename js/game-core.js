@@ -142,18 +142,18 @@ function tryLeaveJail(player, roll) {
 
 function payJailFine(player) {
   if (!player.jail) return;
-  player.money    -= JAIL_FINE;
-  player.jail      = false;
+  player.money -= JAIL_FINE;
+  player.jail = false;
   player.jailTurns = 0;
-  addLog(t('log_jail_paid', { name: player.name, amount: JAIL_FINE }));
+  addLog(t('log_jail_fine_paid', { name: player.name, amount: JAIL_FINE }));
 }
 
 function useJailCard(player) {
-  if (!player.jailCard) return false;
-  player.jailCard  = false;
-  player.jail      = false;
+  if (!player.jail || !player.jailCard) return false;
+  player.jail = false;
   player.jailTurns = 0;
-  addLog(t('log_jail_card', { name: player.name }));
+  player.jailCard = false;
+  addLog(t('log_jail_card_used', { name: player.name }));
   return true;
 }
 
